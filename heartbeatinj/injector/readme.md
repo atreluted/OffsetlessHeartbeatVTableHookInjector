@@ -3,8 +3,8 @@ previously it used the taskschedulerptr offset and the jobs offset to get the he
 
 CREDS TO MY FRIEND X4V
 
-NOTE: this crashes after about 20 seconds because i think the memory gets detected, i don't know the problem but feel free to try fix it and if u want fork the github and post the fixed vers
-or u can dm me at discord "atreluted" and i will push the changes to the original repo and credit u for fixing it, thanks.
+NOTE: this crashes after about 20 seconds because i think the memory gets detected, i don't know the problem u can fix it tho
+my discord: atreluted x4v's discord: nuvq
 
 THX, PLEASE STAR THE GITHUB AND SHARE IT
 
