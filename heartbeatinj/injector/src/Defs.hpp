@@ -1,13 +1,35 @@
 #pragma once
 #include <Windows.h>
+#include <cstdint>
 
-using fHbk = uintptr_t(__fastcall*)(uintptr_t, uintptr_t, uintptr_t);
+using u8 = std::uint8_t;
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using u64 = std::uint64_t;
+using i32 = std::int32_t;
+using i64 = std::int64_t;
+using uptr = std::uintptr_t;
+
+using fHbk = uptr(__fastcall*)(uptr, uptr, uptr);
 using fLdrEx = HMODULE(__stdcall*)(LPCSTR, HANDLE, DWORD);
 using fLdr = HMODULE(__stdcall*)(LPCSTR);
 using fProc = FARPROC(__stdcall*)(HMODULE, LPCSTR);
 using fTab = BOOLEAN(__cdecl*)(PRUNTIME_FUNCTION, DWORD, DWORD64);
 
 #define SH(f, v) Write<decltype(Shared::f)>(g_Shared + offsetof(Shared, f), v)
+
+inline constexpr i32 STATUS_INFO_LENGTH_MISMATCH = static_cast<i32>(0xC0000004L);
+
+inline constexpr bool NT_SUCCESS(i32 status) noexcept 
+{
+    return status >= 0;
+}
+
+constexpr u32 SYS_HANDLE_INFO = 16;
+constexpr u32 SYS_HANDLE_INFO_EX = 64;
+constexpr u32 PROC_BASIC_INFO = 0;
+constexpr u32 OBJ_TYPE_INFO = 2;
+constexpr u32 WORKER_FACTORY_BASIC_INFO = 7;
 
 enum class State { Load, Wait, Inject, Done };
 
@@ -17,21 +39,18 @@ struct Shared {
     fLdr Ldr;
     fProc Proc;
     fTab AddTab;
-    uintptr_t dllSt, dllEd, dllEp, ExcVA, ExcSz, ImpVA, ImpSz, TlsVA, TlsSz;
+    uptr dllSt;
+    uptr dllEd;
+    uptr dllEp;
+    uptr ExcVA;
+    uptr ExcSz;
+    uptr ImpVA;
+    uptr ImpSz;
+    uptr TlsVA;
+    uptr TlsSz;
     State Status;
-    uintptr_t PcmgrInst;
+    uptr PcmgrInst;
 };
-
-using u8 = unsigned char;
-using u16 = unsigned short;
-using u32 = unsigned long;
-using u64 = unsigned long long;
-using i32 = long;
-using i64 = long long;
-using uptr = uintptr_t;
-
-#define NT_SUCCESS(s) ((i32)(s) >= 0)
-#define STATUS_INFO_LENGTH_MISMATCH ((i32)0xC0000004L)
 
 struct ustr {
     u16 len;
@@ -158,12 +177,6 @@ struct pub_info {
     u32 reserved;
     HANDLE handle;
 };
-
-constexpr u32 SYS_HANDLE_INFO = 16;
-constexpr u32 SYS_HANDLE_INFO_EX = 64;
-constexpr u32 PROC_BASIC_INFO = 0;
-constexpr u32 OBJ_TYPE_INFO = 2;
-constexpr u32 WORKER_FACTORY_BASIC_INFO = 7;
 
 struct obj_type_info {
     ustr type_name;
